@@ -20,6 +20,7 @@ class StartingGridActivity : AppCompatActivity() {
     lateinit var instructionText: TextView
     lateinit var progressBar: ProgressBar
     lateinit var tableRow: TableRow
+    var isCounting = false
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -61,32 +62,36 @@ class StartingGridActivity : AppCompatActivity() {
         var isRunning = false
         var start: Long = 0;
         var end: Long = 0;
+
         clutchButton.setOnTouchListener { _, event ->
             when (event.action) {
                 MotionEvent.ACTION_DOWN -> {
                     // Start the thread to increase progress
-                    if (thread == null || !isRunning) {
-                        isRunning = true
-                        start = -1
-                        thread = Thread {
-                            while (progressBar.progress < 100 && isRunning) {
-                                // Increment the progress
-                                // Update the ProgressBar on the main thread
-                                runOnUiThread {
-                                    progressBar.progress = progressBar.progress + 1
+                    if (!isCounting){
+                        if (thread == null || !isRunning) {
+                            isRunning = true
+                            start = -1
+                            thread = Thread {
+                                while (progressBar.progress < 100 && isRunning) {
+                                    // Increment the progress
+                                    // Update the ProgressBar on the main thread
+                                    runOnUiThread {
+                                        progressBar.progress = progressBar.progress + 1
+                                    }
+
+                                    // Sleep for a short time to simulate continuous progress
+                                    Thread.sleep(10)
+                                }
+                                if (isRunning){
+                                    start = startCounting()
                                 }
 
-                                // Sleep for a short time to simulate continuous progress
-                                Thread.sleep(10)
-                            }
-                            if (isRunning){
-                                start = startCounting()
-                            }
 
-
+                            }
+                            thread?.start()
                         }
-                        thread?.start()
                     }
+
                     true
                 }
 
@@ -100,7 +105,7 @@ class StartingGridActivity : AppCompatActivity() {
                     if (start == -1.toLong()){
                         Toast.makeText(applicationContext, "Jump Start", Toast.LENGTH_SHORT).show()
                     }else{
-                        if (start != 0.toLong()){
+                        if (start != 0.toLong() && start != (-1).toLong()){
                             Toast.makeText(applicationContext, "Time is ${end-start} millis", Toast.LENGTH_SHORT).show()
                         }
                     }
@@ -112,8 +117,7 @@ class StartingGridActivity : AppCompatActivity() {
             }
         }
     }
-
-    fun startCounting() : Long{
+    val startCounting = Thread {
         //generate random value between 1 and 5
         val randomValue = (1..5).random()
         //change the src of each of the image buttons in the table row into red
@@ -129,6 +133,26 @@ class StartingGridActivity : AppCompatActivity() {
             val image = tableRow.getChildAt(i) as ImageView
             image.setImageResource(R.drawable.gray)
         }
+    }
+
+    fun startCounting() : Long{
+        //generate random value between 1 and 5
+        isCounting = true
+        val randomValue = (1..5).random()
+        //change the src of each of the image buttons in the table row into red
+
+        for (i in 0 until tableRow.childCount){
+            val image = tableRow.getChildAt(i) as ImageView
+            Thread.sleep(1000)
+            image.setImageResource(R.drawable.red)
+        }
+        //change all the imageViews again to gray after random sconds
+        Thread.sleep(randomValue * 1000L)
+        for (i in 0 until tableRow.childCount){
+            val image = tableRow.getChildAt(i) as ImageView
+            image.setImageResource(R.drawable.gray)
+        }
+        isCounting = false
         return System.currentTimeMillis()
     }
 }
