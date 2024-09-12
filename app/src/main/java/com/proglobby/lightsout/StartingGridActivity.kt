@@ -1,26 +1,42 @@
 package com.proglobby.lightsout
 
 import android.annotation.SuppressLint
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.view.MotionEvent
 import android.view.View
-import android.view.View.OnTouchListener
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TableRow
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 
 class StartingGridActivity : AppCompatActivity() {
     lateinit var clutchButton: ImageButton
     lateinit var instructionText: TextView
     lateinit var progressBar: ProgressBar
     lateinit var tableRow: TableRow
+    lateinit var timeText:TextView
+    var isTiming = false
     var isCounting = false
+
+    var startTime: Long = 0
+
+    //runs without a timer by reposting this handler at the end of the runnable
+    var timerHandler = Handler()
+    var timerRunnable: Runnable = object : Runnable {
+        override fun run() {
+            val millis = System.currentTimeMillis() - startTime
+            var seconds = (millis / 1000).toInt()
+            val minutes = seconds / 60
+            seconds = seconds % 60
+            timeText.setText(String.format("%d:%02d:%03d", minutes, seconds, millis % 1000))
+            timerHandler.postDelayed(this, 20)
+        }
+    }
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,6 +45,7 @@ class StartingGridActivity : AppCompatActivity() {
         instructionText = findViewById(R.id.instructionText)
         progressBar = findViewById(R.id.progressBar)
         tableRow = findViewById(R.id.lights)
+        timeText = findViewById(R.id.timer)
         val thread1: Thread = object : Thread() {
             override fun run() {
                 try {
@@ -67,6 +84,8 @@ class StartingGridActivity : AppCompatActivity() {
             when (event.action) {
                 MotionEvent.ACTION_DOWN -> {
                     // Start the thread to increase progress
+                    timeText.visibility = View.INVISIBLE
+                    instructionText.visibility = View.VISIBLE
                     if (!isCounting){
                         if (thread == null || !isRunning) {
                             isRunning = true
@@ -83,7 +102,8 @@ class StartingGridActivity : AppCompatActivity() {
                                     Thread.sleep(10)
                                 }
                                 if (isRunning){
-                                    start = startCounting()
+                                    start = startLights()
+                                    startCounting()
                                 }
 
 
@@ -97,6 +117,7 @@ class StartingGridActivity : AppCompatActivity() {
 
                 MotionEvent.ACTION_UP -> {
                     // Stop the thread when button is released
+                    timerHandler.removeCallbacks(timerRunnable);
                     end = System.currentTimeMillis()
                     if (progressBar.progress != 100){
                         start = 0
@@ -135,7 +156,7 @@ class StartingGridActivity : AppCompatActivity() {
         }
     }
 
-    fun startCounting() : Long{
+    fun startLights() : Long{
         //generate random value between 1 and 5
         isCounting = true
         val randomValue = (1..5).random()
@@ -155,4 +176,23 @@ class StartingGridActivity : AppCompatActivity() {
         isCounting = false
         return System.currentTimeMillis()
     }
+
+    fun startCounting(){
+        isTiming = true
+        startTime = System.currentTimeMillis();
+        timerHandler.postDelayed(timerRunnable, 0);
+        runOnUiThread(Runnable {
+            timeText.visibility = View.VISIBLE
+            instructionText.visibility = View.INVISIBLE
+        })
+
+    }
+
+    fun stopCounting(){
+        isTiming = false
+        timerHandler.removeCallbacks(timerRunnable);
+
+    }
+
+
 }
