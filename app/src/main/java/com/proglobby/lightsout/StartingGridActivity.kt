@@ -1,6 +1,7 @@
 package com.proglobby.lightsout
 
 import android.annotation.SuppressLint
+import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -22,6 +23,7 @@ class StartingGridActivity : AppCompatActivity() {
     lateinit var timeText:TextView
     var isTiming = false
     var isCounting = false
+    var isJumpStart = false
 
     var startTime: Long = 0
 
@@ -86,8 +88,11 @@ class StartingGridActivity : AppCompatActivity() {
                     // Start the thread to increase progress
                     timeText.visibility = View.INVISIBLE
                     instructionText.visibility = View.VISIBLE
+                    instructionText.setTextColor(Color.BLACK)
+                    instructionText.setText("Hold The Clutch")
                     if (!isCounting){
                         if (thread == null || !isRunning) {
+                            isJumpStart = false
                             isRunning = true
                             start = -1
                             thread = Thread {
@@ -103,7 +108,10 @@ class StartingGridActivity : AppCompatActivity() {
                                 }
                                 if (isRunning){
                                     start = startLights()
-                                    startCounting()
+                                    if (!isJumpStart){
+                                        startCounting()
+                                    }
+
                                 }
 
 
@@ -125,9 +133,33 @@ class StartingGridActivity : AppCompatActivity() {
                     isRunning = false
                     if (start == -1.toLong()){
                         Toast.makeText(applicationContext, "Jump Start", Toast.LENGTH_SHORT).show()
+                        instructionText.setText("Jump Start")
+                        instructionText.setTextColor(Color.RED)
+                        isJumpStart = true
+
                     }else{
                         if (start != 0.toLong() && start != (-1).toLong()){
-                            Toast.makeText(applicationContext, "Time is ${end-start} millis", Toast.LENGTH_SHORT).show()
+                            //Toast.makeText(applicationContext, "Time is ${end-start} millis", Toast.LENGTH_SHORT).show()
+                            //get time in millis from the timeText
+                            val time = timeText.text.toString()
+                            if (time != "") {
+                                val timeArray = time.split(":")
+                                val minutes = timeArray[0].toInt()
+                                val seconds = timeArray[1].toInt()
+                                val millis = timeArray[2].toInt()
+                                val timeInMillis = (minutes * 60 * 1000) + (seconds * 1000) + millis
+                                if (timeInMillis < 300){
+                                    Toast.makeText(applicationContext, "Great", Toast.LENGTH_SHORT).show()
+                                   timeText.setTextColor(Color.GREEN)
+                                }else if (timeInMillis < 500){
+                                    //orange
+                                    timeText.setTextColor(Color.argb(255, 255, 165, 0))
+                                }else{
+                                    timeText.setTextColor(Color.RED)
+                                }
+
+                            }
+
                         }
                     }
                     progressBar.progress = 0
