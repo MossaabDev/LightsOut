@@ -2,6 +2,7 @@ package com.proglobby.lightsout
 
 import android.annotation.SuppressLint
 import android.graphics.Color
+import android.media.SoundPool
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -24,6 +25,8 @@ class StartingGridActivity : AppCompatActivity() {
     var isTiming = false
     var isCounting = false
     var isJumpStart = false
+    lateinit var soundPool: SoundPool
+    var soundId: Int = 0
 
     var startTime: Long = 0
 
@@ -74,6 +77,21 @@ class StartingGridActivity : AppCompatActivity() {
             }
 
         }
+
+        soundPool = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+            val audioAttributes = android.media.AudioAttributes.Builder()
+                .setContentType(android.media.AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                .setUsage(android.media.AudioAttributes.USAGE_GAME)
+                .build()
+            android.media.SoundPool.Builder()
+                .setMaxStreams(1)
+                .setAudioAttributes(audioAttributes)
+                .build()
+        } else {
+            android.media.SoundPool(1, android.media.AudioManager.STREAM_MUSIC, 0)
+        }
+
+        soundId = soundPool.load(this, R.raw.beep, 1)
 
         val handler = Handler(Looper.getMainLooper())
 
@@ -193,7 +211,7 @@ class StartingGridActivity : AppCompatActivity() {
         isCounting = true
         val randomValue = (1..5).random()
         //change the src of each of the image buttons in the table row into red
-
+        soundPool.play(soundId, 1.0f, 1.0f, 1, 0, 1.0f)
         for (i in 0 until tableRow.childCount){
             val image = tableRow.getChildAt(i) as ImageView
             Thread.sleep(1000)
