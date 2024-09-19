@@ -189,8 +189,8 @@ class StartingGridActivity : AppCompatActivity() {
         }
     }
     val startCounting = Thread {
-        //generate random value between 1 and 5
-        val randomValue = (1..5).random()
+        //generate random value between float 1.0 and 5.0
+        val randomValue = (1000..5000).random()
         //change the src of each of the image buttons in the table row into red
 
         for (i in 0 until tableRow.childCount){
@@ -199,7 +199,7 @@ class StartingGridActivity : AppCompatActivity() {
             image.setImageResource(R.drawable.red)
         }
         //change all the imageViews again to gray after random sconds
-        Thread.sleep(randomValue * 1000L)
+        Thread.sleep(randomValue.toLong())
         for (i in 0 until tableRow.childCount){
             val image = tableRow.getChildAt(i) as ImageView
             image.setImageResource(R.drawable.gray)
