@@ -77,6 +77,25 @@ public class StandingsAdapter extends RecyclerView.Adapter<StandingsAdapter.Driv
     }
 
     public void sortDrivers(List<Driver> drivers){
-        Collections.sort(drivers, Comparator.comparing(Driver::getTime));
+        Collections.sort(drivers, new Comparator<Driver>() {
+            @Override
+            public int compare(Driver d1, Driver d2) {
+                // Parse time strings into seconds and millis
+                double time1 = parseTime(d1.getTime());
+                double time2 = parseTime(d2.getTime());
+
+                return Double.compare(time1, time2); // Compare the parsed times
+            }
+        });
+    }
+
+    private static double parseTime(String time) {
+        if (time == "No Time Set"){
+            return 9999999.999;
+        }
+        String[] parts = time.split(":");
+        int seconds = Integer.parseInt(parts[0]);
+        int millis = Integer.parseInt(parts[1]);
+        return seconds + millis / 1000.0; // Convert millis to fractional seconds
     }
 }

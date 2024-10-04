@@ -24,6 +24,7 @@ public class LeaderboardActivity extends Activity {
         f1Drivers.add(new Driver("Charles Leclerc", "Ferrari", "leclerc", "0:219"));
         f1Drivers.add(new Driver("Lewis Hamilton", "Mercides", "hamilton", "0:168"));
         f1Drivers.add(new Driver("Valteri Bottas", "Kick Sauber", "bottas", "0:084"));
+        DBHelper helper = new DBHelper(this);
 
         List<Page> pages = new ArrayList<>();
         pages.add(new Page(f1Drivers));
