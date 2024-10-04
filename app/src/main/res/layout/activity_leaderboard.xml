@@ -40,9 +40,10 @@
         </LinearLayout>
 
         <TextView
+            android:id="@+id/fastestTime"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="1:06:384"
+            android:text="0:183"
             android:textColor="#000000"
             android:textStyle="bold"/>
     </LinearLayout>
@@ -54,22 +55,22 @@
         android:orientation="horizontal"
         android:padding="16dp">
 
-        <Button
-            android:id="@+id/replay_race_button"
+        <android.widget.Button
+            android:id="@+id/f1_grid_button"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Replay race"
-            android:backgroundTint="#FF0000"
+            android:text="F1 Grid"
+            android:background="@drawable/red_btn_bg"
             android:textColor="#FFFFFF"/>
 
-        <Button
-            android:id="@+id/highlights_button"
+        <android.widget.Button
+            android:id="@+id/global_button"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Highlights"
-            android:backgroundTint="#DDDDDD"
+            android:text="Global"
+            android:background="@drawable/gray_btn_bg"
             android:textColor="#000000"
             android:layout_marginStart="8dp"/>
     </LinearLayout>

@@ -23,6 +23,7 @@ public class StandingsAdapter extends RecyclerView.Adapter<StandingsAdapter.Driv
 
     public StandingsAdapter(List<Driver> drivers) {
         this.drivers = drivers;
+        sortDrivers(this.drivers);
     }
 
     @NonNull
@@ -90,12 +91,13 @@ public class StandingsAdapter extends RecyclerView.Adapter<StandingsAdapter.Driv
     }
 
     private static double parseTime(String time) {
-        if (time == "No Time Set"){
+        if (time.equals("No Time Set")){
             return 9999999.999;
+        }else{
+            String[] parts = time.split(":");
+            int seconds = Integer.parseInt(parts[0]);
+            int millis = Integer.parseInt(parts[1]);
+            return seconds + millis / 1000.0; // Convert millis to fractional seconds
         }
-        String[] parts = time.split(":");
-        int seconds = Integer.parseInt(parts[0]);
-        int millis = Integer.parseInt(parts[1]);
-        return seconds + millis / 1000.0; // Convert millis to fractional seconds
     }
 }

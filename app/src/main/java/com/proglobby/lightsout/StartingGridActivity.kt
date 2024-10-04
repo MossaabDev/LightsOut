@@ -16,7 +16,6 @@ import android.widget.TableRow
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
-import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
@@ -64,7 +63,10 @@ class StartingGridActivity : AppCompatActivity() {
         tableRow = findViewById(R.id.lights)
         timeText = findViewById(R.id.timer)
         val toolbar: Toolbar = findViewById(R.id.toolBar)
-
+        val helper = DBHelper(applicationContext)
+        if (helper.userInfos == null) {
+            helper.initUser(User("Player", "", "driver1", "No Time Set"))
+        }
         setSupportActionBar(toolbar)
         supportActionBar?.title = ""
         val drawerToggle = ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.open, R.string.close)
@@ -205,6 +207,12 @@ class StartingGridActivity : AppCompatActivity() {
                                 val seconds = timeArray[1].toInt()
                                 val millis = timeArray[2].toInt()
                                 val timeInMillis = (minutes * 60 * 1000) + (seconds * 1000) + millis
+                                val user = helper.userInfos
+                                if (user != null){
+                                    if (user.time.equals("No Time Set") || timeInMillis < user.timeInMillis){
+                                        helper.updateUserTime(timeInMillis)
+                                    }
+                                }
                                 if (timeInMillis < 300){
                                     Toast.makeText(applicationContext, "Great", Toast.LENGTH_SHORT).show()
                                    timeText.setTextColor(Color.GREEN)

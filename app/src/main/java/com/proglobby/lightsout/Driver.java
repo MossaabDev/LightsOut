@@ -44,4 +44,9 @@ public class Driver {
     public void setTime(String time) {
         this.time = time;
     }
+
+    public int getTimeInMillis(){
+        String[] time = this.time.split(":");
+        return Integer.parseInt(time[0])*60 + Integer.parseInt(time[1]);
+    }
 }

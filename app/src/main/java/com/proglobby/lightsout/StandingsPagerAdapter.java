@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -41,10 +42,16 @@ public class StandingsPagerAdapter extends RecyclerView.Adapter<StandingsPagerAd
     @Override
     public void onBindViewHolder(@NonNull PageHolder holder, int position) {
         Page page = pages.get(position);
-        RecyclerView.LayoutManager lm = new LinearLayoutManager(context);
-        StandingsAdapter adapter = new StandingsAdapter(page.getDriverList());
-        holder.recyclerView.setLayoutManager(lm);
-        holder.recyclerView.setAdapter(adapter);
+        if (page.isReady){
+            holder.loginBtn.setVisibility(View.GONE);
+            RecyclerView.LayoutManager lm = new LinearLayoutManager(context);
+            StandingsAdapter adapter = new StandingsAdapter(page.getDriverList());
+            holder.recyclerView.setLayoutManager(lm);
+            holder.recyclerView.setAdapter(adapter);
+        }else{
+            holder.loginBtn.setVisibility(View.VISIBLE);
+        }
+
     }
 
     @Override
@@ -54,11 +61,12 @@ public class StandingsPagerAdapter extends RecyclerView.Adapter<StandingsPagerAd
 
     public class PageHolder extends RecyclerView.ViewHolder{
         RecyclerView recyclerView;
-
+        Button loginBtn;
 
         public PageHolder(@NonNull View itemView) {
             super(itemView);
             recyclerView = itemView.findViewById(R.id.recycler_view_leaderboard);
+            loginBtn = itemView.findViewById(R.id.login_button);
         }
     }
 }

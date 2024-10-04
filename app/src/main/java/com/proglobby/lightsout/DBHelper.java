@@ -22,6 +22,7 @@ public class DBHelper extends SQLiteOpenHelper {
         db.execSQL(createTable);
         String createTable2 = "CREATE TABLE user (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, team TEXT, img TEXT, time TEXT, email TEXT)";
         db.execSQL(createTable2);
+        System.out.println(" created ");
     }
 
     @Override
@@ -46,6 +47,14 @@ public class DBHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         String update = "UPDATE scores SET team = '"+driver.getTeam()+"', img = '"+driver.getImg()+"', time = '"+driver.getTime()+"' WHERE name = '"+driver.getName()+"'";
         db.execSQL(update);
+    }
+
+    public void updateDrivers(List<Driver> drivers){
+        SQLiteDatabase db = this.getWritableDatabase();
+        for (Driver driver: drivers){
+            String update = "UPDATE scores SET team = '"+driver.getTeam()+"', img = '"+driver.getImg()+"', time = '"+driver.getTime()+"' WHERE name = '"+driver.getName()+"'";
+            db.execSQL(update);
+        }
     }
 
     public void deleteAll(){
@@ -96,7 +105,7 @@ public class DBHelper extends SQLiteOpenHelper {
            String email = cursor.getString(5);
            return new User(name, team, img, time, email);
        }
-       return new User("", "", "", "");
+       return null;
     }
 
     public void initScoreTable(List<Driver> drivers){
@@ -107,8 +116,31 @@ public class DBHelper extends SQLiteOpenHelper {
             cv.put("team", driver.getTeam());
             cv .put("time", driver.getTime());
             cv.put("img", driver.getImg());
-            db.insert("score", null, cv);
+            db.insert("scores", null, cv);
         }
+    }
+
+    //change time of user
+    public void updateUserTime(int timeInMillis){
+        String time = getTimeFromMillis(timeInMillis);
+        SQLiteDatabase db = this.getWritableDatabase();
+        String update = "UPDATE user SET time = '"+time+"' WHERE id = 0";
+        db.execSQL(update);
+    }
+
+    public String getUserTime(){
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT time FROM user WHERE id = 0", null);
+        while (cursor.moveToNext()){
+            return cursor.getString(4);
+        }
+        return null;
+    }
+
+    private String getTimeFromMillis(int millis){
+        int seconds = millis/1000;
+        int milliseconds = millis%1000;
+        return seconds%60 + ":" + milliseconds;
     }
 
 
