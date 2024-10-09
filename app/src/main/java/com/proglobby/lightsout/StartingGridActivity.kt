@@ -191,7 +191,6 @@ class StartingGridActivity : AppCompatActivity() {
                     }
                     isRunning = false
                     if (start == -1.toLong()){
-                        Toast.makeText(applicationContext, "Jump Start", Toast.LENGTH_SHORT).show()
                         instructionText.setText("Jump Start")
                         instructionText.setTextColor(Color.RED)
                         isJumpStart = true
@@ -214,7 +213,6 @@ class StartingGridActivity : AppCompatActivity() {
                                     }
                                 }
                                 if (timeInMillis < 300){
-                                    Toast.makeText(applicationContext, "Great", Toast.LENGTH_SHORT).show()
                                    timeText.setTextColor(Color.GREEN)
                                 }else if (timeInMillis < 500){
                                     //orange
